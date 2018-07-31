@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+	<!-- 注释掉，采用POM设置 -->
+	<substitutionProperty name="log.base" value="logs/tools" />
+	<substitutionProperty name="log.level" value="debug" />
+
+	<substitutionProperty name="max.size" value="100MB" />
+
+	<contextName>tools</contextName>
+	<jmxConfigurator />
+
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{smy.requestFlowNo}|%X{smy.consumerIp}] %logger{56}.%method\(\):%L - %msg%n</pattern>
+		</layout>
+	</appender>
+
+	<appender name="file.all" class="ch.qos.logback.core.rolling.RollingFileAppender"><!-- All Log Info -->
+		<File>${log.base}/tools.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.base}/tools_all_%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>${max.size}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{smy.requestFlowNo}|%X{smy.consumerIp}] %logger{56}.%method\(\): - %msg%n</pattern>
+		</layout>
+	</appender>
+
+    <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+    <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+    <!-- 添加附加的appender,最多只能添加一个 -->
+    <appender name ="file.async" class= "ch.qos.logback.classic.AsyncAppender">
+         <discardingThreshold>0</discardingThreshold>
+         <queueSize>256</queueSize>
+         <includeCallerData>true</includeCallerData>
+         <appender-ref ref ="file.all"/>
+     </appender>
+
+	<appender name="file.error"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${log.base}/tools_err.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.base}/tools_err_%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>${max.size}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{smy.requestFlowNo}|%X{smy.consumerIp}] %logger{56}.%method\(\): - %msg%n</pattern>
+		</layout>
+
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<appender name="file.info"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${log.base}/tools_info.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.base}/tools_info_%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>${max.size}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{smy.requestFlowNo}|%X{smy.consumerIp}] %logger{56}.%method\(\): - %msg%n</pattern>
+		</layout>
+
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>info</level>
+		</filter>
+	</appender>
+
+
+	<appender name="file.sys"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${log.base}/tools_sys.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.base}/tools_sys_%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>${max.size}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{smy.requestFlowNo}|%X{smy.consumerIp}] %logger{56}.%method\(\): - %msg%n</pattern>
+		</layout>
+	</appender>
+
+	<root level="${log.level}">
+		<appender-ref ref="stdout" />
+		<appender-ref ref="file.async" />
+		<appender-ref ref="file.error" />
+		<appender-ref ref="file.info" />
+	</root>
+
+<!-- 	<!-- 以下日志打印输出请自行关闭开户，但上线请统一处理 --> -->
+<!-- 	<logger name="org.springframework" additivity="false"> -->
+<!--         <level value="warn"/> -->
+<!--         <appender-ref ref="file.async" /> -->
+<!--         <appender-ref ref="file.error" /> -->
+<!--     </logger> -->
+<!--     <logger name="org.mybatis" additivity="true"> -->
+<!--         <level value="warn"/> -->
+<!--         <appender-ref ref="file.async" /> -->
+<!--         <appender-ref ref="file.error" /> -->
+<!--     </logger> -->
+<!--     <logger name="com.alibaba.dubbo" additivity="false"> -->
+<!--         <level value="warn"/> -->
+<!--         <appender-ref ref="file.async" /> -->
+<!--         <appender-ref ref="file.error" /> -->
+<!--     </logger> -->
+<!--     <logger name="com.alibaba.rocketmq" additivity="false"> -->
+<!--         <level value="warn"/> -->
+<!--         <appender-ref ref="file.async" /> -->
+<!--         <appender-ref ref="file.error" /> -->
+<!--     </logger> -->
+<!--    <logger name="com.smy.framework.dubbo.filter" additivity="false"> -->
+<!--         <level value="warn"/> -->
+<!--         <appender-ref ref="file.async" /> -->
+<!--         <appender-ref ref="file.error" /> -->
+<!--     </logger> -->
+    
+<!-- 	  <!--系统监控日志--> -->
+<!-- 	<appender name="file.error.monitor" -->
+<!-- 	class="ch.qos.logback.core.rolling.RollingFileAppender"> -->
+<!-- 	<File>/app/monitor/log/${dubbo.application.name}/err_monitor.log</File> -->
+<!-- 	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> -->
+<!-- 	<FileNamePattern>/app/monitor/log/${dubbo.application.name}/err_monitor_%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern> -->
+<!-- 	<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP"> -->
+<!-- 	<maxFileSize>${max.size}</maxFileSize> -->
+<!-- 	</timeBasedFileNamingAndTriggeringPolicy> -->
+<!-- 	</rollingPolicy> -->
+	
+<!-- 	<layout class="ch.qos.logback.classic.PatternLayout"> -->
+<!-- 	<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{smy.requestFlowNo}|%X{smy.consumerIp}] %X{className}.%X{methodName}\(\): - %msg%n</pattern> -->
+<!-- 	</layout> -->
+	
+<!-- 	<filter class="ch.qos.logback.classic.filter.LevelFilter"> -->
+<!-- 	<level>ERROR</level> -->
+<!-- 	<onMatch>ACCEPT</onMatch> -->
+<!-- 	<onMismatch>DENY</onMismatch> -->
+<!-- 	</filter> -->
+<!-- 	</appender>  -->
+	
+	
+<!-- 	<appender name="file.heart.monitor" -->
+<!-- 	class="ch.qos.logback.core.rolling.RollingFileAppender"> -->
+<!-- 	<File>/app/monitor/log/${dubbo.application.name}/heart.log</File> -->
+<!-- 	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> -->
+<!-- 	<FileNamePattern>/app/monitor/log/${dubbo.application.name}/heart_%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern> -->
+<!-- 	<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP"> -->
+<!-- 	<maxFileSize>${max.size}</maxFileSize> -->
+<!-- 	</timeBasedFileNamingAndTriggeringPolicy> -->
+<!-- 	</rollingPolicy> -->
+	
+<!-- 	<layout class="ch.qos.logback.classic.PatternLayout"> -->
+<!-- 	<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{smy.requestFlowNo}|%X{smy.consumerIp}] %logger{56}.%method\(\): - %msg%n</pattern> -->
+<!-- 	</layout> -->
+<!-- 	</appender> -->
+	
+<!-- 	<appender name="file.interfaceCall.monitor" -->
+<!-- 	class="ch.qos.logback.core.rolling.RollingFileAppender"> -->
+<!-- 	<File>/app/monitor/log/${dubbo.application.name}/interfaceCall.log</File> -->
+<!-- 	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> -->
+<!-- 	<FileNamePattern>/app/monitor/log/${dubbo.application.name}/interfaceCall_%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern> -->
+<!-- 	<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP"> -->
+<!-- 	<maxFileSize>${max.size}</maxFileSize> -->
+<!-- 	</timeBasedFileNamingAndTriggeringPolicy> -->
+<!-- 	</rollingPolicy> -->
+	
+<!-- 	<layout class="ch.qos.logback.classic.PatternLayout"> -->
+<!-- 	<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{smy.requestFlowNo}|%X{smy.consumerIp}] %X{interface.call.className}.%X{interface.call.methodName}\(\): - %msg%n</pattern> -->
+<!-- 	</layout> -->
+<!-- 	</appender>  -->
+	
+<!-- 	<logger name="com.smy.smyx.rtm.client.heart.LiveListener" additivity="false"> -->
+<!-- 	<appender-ref ref="file.heart.monitor" /> -->
+<!-- 	</logger>  -->
+	
+<!-- 	<logger name="com.smy.smyx.rtm.client.error" additivity="false"> -->
+<!-- 	<appender-ref ref="file.error.monitor" /> -->
+<!-- 	</logger>  -->
+	
+<!-- 	<logger name="com.smy.smyx.rtm.client.interfaceCall" additivity="false"> -->
+<!-- 	<appender-ref ref="file.interfaceCall.monitor" /> -->
+<!-- 	</logger> -->
+	
+<!-- 	 <!--dubbo限流监控日志--> -->
+<!-- 	<appender name="dubboPermitLoggerAppender"  -->
+<!-- 	class="ch.qos.logback.core.rolling.RollingFileAppender"> -->
+<!--   	<File>${log.base}/dubboPermitLogger.log</File> -->
+<!--   	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> -->
+<!--    	<FileNamePattern>${log.base}/dubboPermitLogger_%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern> -->
+<!--    	<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP"> -->
+<!--     <maxFileSize>${max.size}</maxFileSize> -->
+<!--    		</timeBasedFileNamingAndTriggeringPolicy> -->
+<!--   	</rollingPolicy> -->
+
+<!--   	<layout class="ch.qos.logback.classic.PatternLayout"> -->
+<!--    	<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{smy.requestFlowNo}|%X{smy.consumerIp}] %logger{56}.%method\(\): - %msg%n</pattern> -->
+<!--   	</layout> -->
+<!--  	</appender>  -->
+ 	
+<!--  	<logger name="dubboPermitLogger" additivity="false"> -->
+<!-- 	       <appender-ref ref="dubboPermitLoggerAppender" /> -->
+<!-- 	</logger>  -->
+</configuration>
