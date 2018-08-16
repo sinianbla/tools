@@ -19,9 +19,9 @@
       default-lazy-init="false">
 	
 	<context:component-scan base-package="com.sinianbla"/>
+	<import resource="classpath:mybatis/mybatis-config.xml"/>
 	
 	<context:annotation-config></context:annotation-config>
-<!-- 	<import resource="classpath:*.xml"/> -->
 	
 <!-- 	<aop:config> -->
 <!-- 	<aop:aspect ref="userAop"> -->

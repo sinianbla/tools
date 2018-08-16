@@ -9,12 +9,17 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
+import com.sinianbla.entity.UserEntity;
 
 public class PreHttpRequestFilter implements Filter {
 	private final static Logger logger = LoggerFactory.getLogger(PreHttpRequestFilter.class);
+
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// TODO Auto-generated method stub
@@ -27,10 +32,20 @@ public class PreHttpRequestFilter implements Filter {
 		
 		logger.info("---------------------------- I'm in ------------------------");
 		HttpServletRequest req = (HttpServletRequest)request;
-		if (req.getCookies().length < 0){
+		HttpServletResponse res = (HttpServletResponse)response;
+		logger.info("session ->" + req.getSession());
+		UserEntity user = (UserEntity)req.getSession().getAttribute("userInfo");
+		if (user == null || user.getLoginName()== null){
+			String requestPath = req.getServletPath();
+			if(requestPath.equals("/user/loginPage") || requestPath.equals("/user/login")){
+				chain.doFilter(request, response);
+			} else{
+				res.sendRedirect("/tools/user/loginPage");
+			}
 			logger.info("¶Ë¿Ú:" + request.getServerPort());
+		} else {
+			chain.doFilter(request, response);
 		}
-		chain.doFilter(request, response);
 	}
 
 	@Override

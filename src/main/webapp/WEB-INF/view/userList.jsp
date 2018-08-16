@@ -7,6 +7,6 @@
 <title>用户列表</title>
 </head>
 <body>
-
+<p>欢迎<%=loginName %></p>
 </body>
 </html>
